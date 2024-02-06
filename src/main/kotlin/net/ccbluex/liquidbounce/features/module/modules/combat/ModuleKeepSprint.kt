@@ -1,7 +1,7 @@
 /*
  * This file is part of LiquidBounce (https://github.com/CCBlueX/LiquidBounce)
  *
- * Copyright (c) 2015 - 2024 CCBlueX
+ * Copyright (c) 2024 CCBlueX
  *
  * LiquidBounce is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,28 +15,16 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with LiquidBounce. If not, see <https://www.gnu.org/licenses/>.
+ *
+ *
  */
-package net.ccbluex.liquidbounce.script.bindings.api
 
-import net.ccbluex.liquidbounce.utils.block.getBlock
-import net.ccbluex.liquidbounce.utils.block.getState
-import net.ccbluex.liquidbounce.utils.item.createItem
-import net.minecraft.block.BlockState
-import net.minecraft.item.ItemStack
-import net.minecraft.util.math.BlockPos
+package net.ccbluex.liquidbounce.features.module.modules.combat
+
+import net.ccbluex.liquidbounce.features.module.Category
+import net.ccbluex.liquidbounce.features.module.Module
 
 /**
- * Object used by the script API to provide an
+ * When hitting an entity, the player will keep sprinting
  */
-object JsBlockUtil {
-
-    @JvmName("newBlockPos")
-    fun newBlockPos(x: Int, y: Int, z: Int): BlockPos = BlockPos(x, y, z)
-
-    @JvmName("getBlock")
-    fun getBlock(blockPos: BlockPos) = blockPos.getBlock()
-
-    @JvmName("getState")
-    fun getState(blockPos: BlockPos): BlockState? = blockPos.getState()
-
-}
+object ModuleKeepSprint : Module("KeepSprint", Category.COMBAT)
