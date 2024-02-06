@@ -363,14 +363,7 @@ object ModuleKillAura : Module("KillAura", Category.COMBAT) {
             // Because target tracker enemies are sorted by priority, we can just take the first one
             val targetByPriority = targetTracker.enemies().firstOrNull() ?: return
 
-            val rotationToEnemy = FightBot.makeClientSideRotationNeeded(targetByPriority) ?: return
-            // lock on target tracker
-            RotationManager.aimAt(
-                rotations.toAimPlan(rotationToEnemy, !ignoreOpenInventory, silent = false),
-                priority = Priority.IMPORTANT_FOR_USAGE_2,
-                provider = this@ModuleKillAura
-            )
-            targetTracker.lock(targetByPriority)
+            targetTracker.lock(FightBot.markAsTargetEntity(targetByPriority) ?: return)
         }
     }
 
