@@ -29,12 +29,3 @@ val baritoneInstalled by lazy {
         false
     }
 }
-
-fun walkCustomGoal(x: Double, y: Double, z: Double) {
-    if (!baritoneInstalled) {
-        return
-    }
-
-
-
-}

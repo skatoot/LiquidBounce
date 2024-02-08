@@ -95,7 +95,7 @@ object ModuleKillAura : Module("KillAura", Category.COMBAT) {
     private val pointTracker = tree(PointTracker())
 
     init {
-        tree(FightBot)
+        tree(Baritone)
     }
 
     // Bypass techniques
@@ -339,6 +339,8 @@ object ModuleKillAura : Module("KillAura", Category.COMBAT) {
             // lock on target tracker
             targetTracker.lock(target)
 
+            Baritone.isNearTarget(target)
+
             // aim at target
             val ticks = rotations.howLongItTakes(spot.rotation)
             if (aimTimingMode == AimTimingMode.FLICK && !clickScheduler.isClickOnNextTick(ticks.coerceAtLeast(1))) {
@@ -359,11 +361,11 @@ object ModuleKillAura : Module("KillAura", Category.COMBAT) {
         }
 
         // Choose enemy for fight bot
-        if (FightBot.enabled && targetTracker.lockedOnTarget == null) {
+        if (Baritone.enabled && targetTracker.lockedOnTarget == null) {
             // Because target tracker enemies are sorted by priority, we can just take the first one
-            val targetByPriority = targetTracker.enemies().firstOrNull() ?: return
+            val enemies = targetTracker.enemies()
 
-            targetTracker.lock(FightBot.markAsTargetEntity(targetByPriority) ?: return)
+            Baritone.followTargets(enemies.toSet())
         }
     }
 

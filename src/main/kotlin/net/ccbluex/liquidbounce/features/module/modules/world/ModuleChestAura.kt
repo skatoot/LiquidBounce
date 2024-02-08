@@ -18,17 +18,23 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.world
 
+import baritone.api.BaritoneAPI
+import baritone.api.pathing.goals.GoalBlock
+import baritone.api.pathing.goals.GoalNear
 import net.ccbluex.liquidbounce.config.ToggleableConfigurable
 import net.ccbluex.liquidbounce.event.repeatable
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
+import net.ccbluex.liquidbounce.features.module.modules.exploit.ModuleGhostHand.targetedBlocks
 import net.ccbluex.liquidbounce.utils.aiming.RotationManager
 import net.ccbluex.liquidbounce.utils.aiming.RotationsConfigurable
 import net.ccbluex.liquidbounce.utils.aiming.raytraceBlock
+import net.ccbluex.liquidbounce.utils.baritone.baritoneInstalled
 import net.ccbluex.liquidbounce.utils.block.getCenterDistanceSquared
 import net.ccbluex.liquidbounce.utils.block.getState
 import net.ccbluex.liquidbounce.utils.block.searchBlocksInCuboid
 import net.ccbluex.liquidbounce.utils.client.Chronometer
+import net.ccbluex.liquidbounce.utils.client.chat
 import net.ccbluex.liquidbounce.utils.entity.eyes
 import net.ccbluex.liquidbounce.utils.entity.getNearestPoint
 import net.ccbluex.liquidbounce.utils.kotlin.Priority
@@ -73,9 +79,37 @@ object ModuleChestAura : Module("ChestAura", Category.WORLD) {
         val timeout by int("Timeout", 2500, 100..10000)
     }
 
+    internal object Baritone : ToggleableConfigurable(this, "Baritone", false) {
+
+        private val cuboidRadius by float("Radius", 30f, 1f..100f)
+
+        val repeatable = repeatable {
+            if (!baritoneInstalled) {
+                chat("§cBaritone is not installed.")
+                return@repeatable
+            }
+
+            val blocks = searchBlocksInCuboid(cuboidRadius, player.eyes) { pos, state ->
+                targetedBlocks.contains(state.block) && pos !in clickedBlocks
+            }.sortedBy { it.first.getCenterDistanceSquared() }
+
+            val baritone = BaritoneAPI.getProvider().primaryBaritone
+
+            if (blocks.isEmpty() || mc.currentScreen is HandledScreen<*>) {
+                return@repeatable
+            }
+
+            val (blockPos, _) = blocks.firstOrNull() ?: return@repeatable
+
+            baritone.customGoalProcess.setGoalAndPath(GoalNear(blockPos, (range - 1).toInt()))
+        }
+
+    }
+
     init {
         tree(AwaitContainerOptions)
         tree(CloseInstantlyOptions)
+        tree(Baritone)
     }
 
     private val closeInstantlyTimeout = Chronometer()
