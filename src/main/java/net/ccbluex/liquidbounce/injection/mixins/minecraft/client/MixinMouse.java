@@ -64,12 +64,9 @@ public class MixinMouse {
      */
     @Redirect(method = "updateMouse", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/network/ClientPlayerEntity;changeLookDirection(DD)V"), require = 1, allow = 1)
     private void hookUpdateMouse(ClientPlayerEntity entity, double cursorDeltaX, double cursorDeltaY) {
-        final MouseRotationEvent event = new MouseRotationEvent(cursorDeltaX, cursorDeltaY);
-        EventManager.INSTANCE.callEvent(event);
-        if (event.isCancelled())
-            return;
+        entity.changeLookDirection(cursorDeltaX, cursorDeltaY);
 
-        entity.changeLookDirection(event.getCursorDeltaX(), event.getCursorDeltaY());
+        EventManager.INSTANCE.callEvent(new MouseRotationEvent());
     }
 
 }

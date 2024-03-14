@@ -19,7 +19,7 @@
 package net.ccbluex.liquidbounce.utils.aiming
 
 import net.ccbluex.liquidbounce.config.NamedChoice
-import net.ccbluex.liquidbounce.utils.client.mc
+import net.ccbluex.liquidbounce.utils.client.player
 import net.ccbluex.liquidbounce.utils.entity.rotation
 import net.ccbluex.liquidbounce.utils.kotlin.random
 import kotlin.math.abs
@@ -63,7 +63,7 @@ class AimPlan(
      */
     fun nextRotation(fromRotation: Rotation, isResetting: Boolean): Rotation {
         if (isResetting) {
-            return angleSmooth.limitAngleChange(fromRotation, mc.player!!.rotation)
+            return angleSmooth.limitAngleChange(fromRotation, player.rotation)
         }
 
         return angleSmooth.limitAngleChange(fromRotation, rotation)

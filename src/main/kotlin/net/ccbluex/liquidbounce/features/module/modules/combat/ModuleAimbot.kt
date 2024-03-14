@@ -105,11 +105,6 @@ object ModuleAimbot : Module("Aimbot", Category.COMBAT) {
                 rotationPreference = rotationPreference
             ) ?: continue
 
-            if (RotationManager.rotationDifference(player.rotation, spot.rotation)
-                <= rotationsConfigurable.resetThreshold) {
-                break
-            }
-
             return spot.rotation
         }
 

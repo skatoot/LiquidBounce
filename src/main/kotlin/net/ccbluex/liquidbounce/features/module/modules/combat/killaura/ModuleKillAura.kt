@@ -341,7 +341,7 @@ object ModuleKillAura : Module("KillAura", Category.COMBAT) {
 
             val situation = when {
                 clickScheduler.goingToClick ||
-                    clickScheduler.isClickOnNextTick(1) -> PointTracker.AimSituation.FOR_NEXT_TICK
+                    clickScheduler.isClickOnNextTick() -> PointTracker.AimSituation.FOR_NEXT_TICK
 
                 else -> PointTracker.AimSituation.FOR_THE_FUTURE
             }

@@ -45,9 +45,6 @@ public abstract class MixinEntity {
     public boolean noClip;
 
     @Shadow
-    protected boolean submergedInWater;
-
-    @Shadow
     public static Vec3d movementInputToVelocity(Vec3d movementInput, float speed, float yaw) {
         return null;
     }
@@ -60,6 +57,18 @@ public abstract class MixinEntity {
 
     @Shadow
     public abstract boolean isPlayer();
+
+    @Shadow
+    private float yaw;
+
+    @Shadow
+    private float pitch;
+
+    @Shadow
+    public float prevYaw;
+
+    @Shadow
+    public float prevPitch;
 
     /**
      * Hook entity margin modification event

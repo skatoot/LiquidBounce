@@ -42,7 +42,6 @@ import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket
 import net.minecraft.network.packet.s2c.play.PlayerPositionLookS2CPacket
 import net.minecraft.util.math.MathHelper
 import net.minecraft.util.math.Vec3d
-import org.jetbrains.annotations.Range
 import kotlin.math.*
 
 /**
@@ -50,14 +49,12 @@ import kotlin.math.*
  */
 open class RotationsConfigurable(
     turnSpeed: ClosedFloatingPointRange<Float> = 180f..180f,
-    smootherMode: SmootherMode = SmootherMode.RELATIVE,
-    fixVelocity: Boolean = true,
     changeLook: Boolean = false
 ) : Configurable("Rotations") {
 
     val turnSpeed by floatRange("TurnSpeed", turnSpeed, 0f..180f)
-    val smoothMode by enumChoice("SmoothMode", smootherMode)
-    var fixVelocity by boolean("FixVelocity", fixVelocity)
+    val smoothMode by enumChoice("SmoothMode", SmootherMode.RELATIVE)
+    var fixVelocity by boolean("FixVelocity", true)
     val resetThreshold by float("ResetThreshold", 2f, 1f..180f)
     val ticksUntilReset by int("TicksUntilReset", 5, 1..30, "ticks")
     val changeLook by boolean("ChangeLook", changeLook)
@@ -223,10 +220,6 @@ object RotationManager : Listenable {
             storedAimPlan.nextRotation(currentRotation ?: playerRotation, aimPlan == null).fixedSensitivity().let {
                 currentRotation = it
                 previousAimPlan = storedAimPlan
-
-                if (storedAimPlan.changeLook) {
-                    player.applyRotation(it)
-                }
             }
         }
         // Update reset ticks
@@ -239,8 +232,6 @@ object RotationManager : Listenable {
     private fun allowedToUpdate() = !CombatManager.shouldPauseRotation()
 
     fun rotationMatchesPreviousRotation(): Boolean {
-        val player = mc.player ?: return false
-
         currentRotation?.let {
             return it == previousRotation
         }
@@ -322,6 +313,22 @@ object RotationManager : Listenable {
         }
 
         theoreticalServerRotation = rotation
+    }
+
+    val mouseAimHandler = handler<MouseRotationEvent> {
+        val aimPlan = storedAimPlan
+
+        if (aimPlan == null || !aimPlan.changeLook) {
+            return@handler
+        }
+
+        // TODO: Implement mouse aim
+
+        val previousRotation = previousRotation ?: return@handler
+        val currentRotation = currentRotation ?: return@handler
+
+        player.yaw = MathHelper.lerp(mc.tickDelta, previousRotation.yaw, currentRotation.yaw)
+        player.pitch = MathHelper.lerp(mc.tickDelta, previousRotation.pitch, currentRotation.pitch)
     }
 
     /**
